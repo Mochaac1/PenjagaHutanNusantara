@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penjaga Hutan Nusantara</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --c1: #0d1a0d;
+  --moss: #3d6b3d;
+  --moss-b: #4e8c4e;
+  --gold: #c8940a;
+  --gold-b: #e8b020;
+  --gold-p: #f5e090;
+  --cream: #e8dfc0;
+  --muted: #8aaa70;
+  --faint: #4a6040;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Crimson Pro', serif;
+  background: var(--c1);
+  color: var(--cream);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+canvas#bgCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 0%, rgba(10,30,10,0.55) 0%, transparent 70%),
+    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(5,15,5,0.85) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 80% at 0% 50%, rgba(5,15,5,0.5) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 80% at 100% 50%, rgba(5,15,5,0.5) 0%, transparent 60%);
+  pointer-events: none;
+}
+canvas#particlesCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.menu-wrap {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem 1rem;
+}
+.title-block {
+  text-align: center;
+  margin-bottom: 2.4rem;
+  animation: fadeDown 1s ease both;
+}
+.emblem {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.6rem;
+  animation: floatEmb 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 18px rgba(100,220,100,0.35)) drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+}
+@keyframes floatEmb {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.title-rune {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-bottom: 0.55rem;
+  opacity: 0.5;
+}
+.rune-line {
+  height: 1px;
+  width: 70px;
+  background: linear-gradient(to right, transparent, var(--gold));
+}
+.rune-line.r { background: linear-gradient(to left, transparent, var(--gold)); }
+.rune-sym {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: var(--gold);
+  letter-spacing: 0.3em;
+}
+.game-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  font-weight: 900;
+  color: var(--gold-b);
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 40px rgba(200,148,10,0.5), 0 0 80px rgba(200,148,10,0.2), 0 2px 4px rgba(0,0,0,0.8);
+  margin-bottom: 0.3rem;
+}
+.game-subtitle {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+.menu-panel {
+  width: 100%;
+  background: rgba(12,20,10,0.72);
+  border: 1px solid rgba(78,140,78,0.2);
+  border-radius: 18px;
+  padding: 1.8rem 2.2rem 2rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 0 1px rgba(78,140,78,0.07),
+    0 8px 40px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(78,140,78,0.14),
+    inset 0 -1px 0 rgba(0,0,0,0.4);
+  animation: fadeUp 0.9s ease 0.2s both;
+}
+.menu-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.85rem 1.3rem;
+  margin-bottom: 0.7rem;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(78,140,78,0.17);
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--cream);
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  gap: 1rem;
+  transition: background 0.2s, border-color 0.2s, transform 0.18s, box-shadow 0.2s;
+  text-decoration: none;
+  position: relative;
+}
+.menu-btn:last-child { margin-bottom: 0; }
+.menu-btn:hover {
+  transform: translateX(5px);
+  border-color: rgba(200,148,10,0.4);
+  background: rgba(200,148,10,0.055);
+  box-shadow: 0 0 18px rgba(200,148,10,0.09), inset 0 1px 0 rgba(200,148,10,0.08);
+}
+.menu-btn:hover .btn-icon { transform: scale(1.15); }
+.menu-btn:active { transform: translateX(2px) scale(0.99); }
+.menu-btn.primary {
+  background: rgba(61,107,61,0.2);
+  border-color: rgba(78,140,78,0.38);
+}
+.menu-btn.primary:hover {
+  background: rgba(78,140,78,0.2);
+  border-color: var(--moss-b);
+  box-shadow: 0 0 22px rgba(78,140,78,0.18), inset 0 1px 0 rgba(78,140,78,0.18);
+}
+.menu-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.btn-icon {
+  font-size: 1.25rem;
+  min-width: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s;
+  filter: drop-shadow(0 0 4px rgba(255,255,200,0.25));
+}
+.btn-label { flex: 1; }
+.btn-arrow {
+  font-size: 0.68rem;
+  color: var(--faint);
+  transition: color 0.2s, transform 0.2s;
+}
+.menu-btn:hover .btn-arrow { color: var(--gold); transform: translateX(3px); }
+.btn-badge {
+  font-size: 0.58rem;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: rgba(200,148,10,0.13);
+  border: 1px solid rgba(200,148,10,0.28);
+  color: var(--gold-b);
+}
+.menu-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(78,140,78,0.22), transparent);
+  margin: 0.9rem 0;
+}
+.menu-footer {
+  text-align: center;
+  margin-top: 1.4rem;
+  animation: fadeUp 1s ease 0.5s both;
+}
+.footer-lore {
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--faint);
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+}
+.footer-ver {
+  font-size: 0.65rem;
+  color: var(--faint);
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.15em;
+  opacity: 0.6;
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(5,12,5,0.88);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: linear-gradient(160deg, rgba(20,34,18,0.98) 0%, rgba(14,22,12,0.99) 100%);
+  border: 1px solid rgba(78,140,78,0.28);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 460px;
+  max-height: 82vh;
+  overflow-y: auto;
+  padding: 1.8rem 1.9rem;
+  box-shadow: 0 0 0 1px rgba(78,140,78,0.07), 0 24px 60px rgba(0,0,0,0.7);
+  transform: translateY(14px) scale(0.97);
+  transition: transform 0.25s ease;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(78,140,78,0.3) transparent;
+}
+.modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.3rem;
+  border-bottom: 1px solid rgba(78,140,78,0.16);
+  padding-bottom: 0.75rem;
+}
+.modal-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gold-b);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.modal-close {
+  background: none;
+  border: 1px solid rgba(78,140,78,0.22);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 3px 9px;
+  font-size: 0.72rem;
+  font-family: 'Cinzel', serif;
+  transition: all 0.15s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.05); color: var(--cream); }
+.tut-section { margin-bottom: 1.3rem; }
+.tut-section h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.tut-section h3::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.45;
+}
+.tut-section p {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.tut-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+  margin-top: 0.45rem;
+}
+.tut-card {
+  background: rgba(255,255,255,0.022);
+  border: 1px solid rgba(78,140,78,0.14);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+}
+.tut-card-icon { font-size: 1.2rem; display: block; margin-bottom: 0.2rem; }
+.tut-card-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.07em;
+  color: var(--cream);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 2px;
+}
+.tut-card-desc { font-size: 0.73rem; color: var(--faint); line-height: 1.4; }
+.enemy-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.38rem 0;
+  border-bottom: 1px solid rgba(78,140,78,0.07);
+}
+.enemy-row:last-child { border-bottom: none; }
+.enemy-emoji { font-size: 1.15rem; min-width: 1.4rem; text-align: center; }
+.enemy-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  display: block;
+}
+.enemy-desc { font-size: 0.73rem; color: var(--faint); }
+.modal-btn-row { margin-top: 1.3rem; display: flex; gap: 0.55rem; }
+.modal-btn {
+  flex: 1;
+  padding: 0.62rem 1rem;
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid rgba(78,140,78,0.33);
+  background: rgba(61,107,61,0.16);
+  color: var(--gold-b);
+  transition: all 0.15s;
+  text-decoration: none;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-btn:hover { background: rgba(78,140,78,0.22); border-color: var(--moss-b); }
+.modal-btn.sec {
+  background: transparent;
+  border-color: rgba(78,140,78,0.18);
+  color: var(--muted);
+}
+.modal-btn.sec:hover { background: rgba(255,255,255,0.04); color: var(--cream); }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<canvas id="particlesCanvas"></canvas>
+<div class="overlay"></div>
+
+<div class="menu-wrap">
+  <div class="title-block">
+    <span class="emblem">🌳</span>
+    <div class="title-rune">
+      <div class="rune-line"></div>
+      <span class="rune-sym">✦ Nusantara ✦</span>
+      <div class="rune-line r"></div>
+    </div>
+    <h1 class="game-title">Penjaga Hutan</h1>
+    <p class="game-subtitle">Roh Hutan Bangkit, Kegelapan Mundur</p>
+  </div>
+
+  <div class="menu-panel">
+    <a class="menu-btn primary" href="projek.html">
+      <span class="btn-icon">⚔️</span>
+      <span class="btn-label">Mulai Baru</span>
+      <span class="btn-arrow">▶</span>
+    </a>
+    <button class="menu-btn disabled" id="btnLanjutkan">
+      <span class="btn-icon">🌿</span>
+      <span class="btn-label">Lanjutkan</span>
+      <span class="btn-badge" id="saveLabel">Tidak ada data</span>
+      <span class="btn-arrow">▶</span>
+    </button>
+
+    <div class="menu-divider"></div>
+
+    <button class="menu-btn" id="btnTutorial">
+      <span class="btn-icon">📖</span>
+      <span class="btn-label">Tutorial</span>
+      <span class="btn-arrow">▶</span>
+    </button>
+    <button class="menu-btn" id="btnKeluar">
+      <span class="btn-icon">🚪</span>
+      <span class="btn-label">Keluar</span>
+      <span class="btn-arrow">▶</span>
+    </button>
+  </div>
+
+  <div class="menu-footer">
+    <p class="footer-lore">"Selama pohon itu berdiri, harapan masih ada."</p>
+    <p class="footer-ver">v1.0 &nbsp;·&nbsp; Penjaga Hutan Nusantara</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalTutorial">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">📖 Cara Bermain</span>
+      <button class="modal-close" data-close="modalTutorial">✕ Tutup</button>
+    </div>
+    <div class="tut-section">
+      <h3>Tujuan</h3>
+      <p>Cegah makhluk kegelapan mencapai ujung jalur. Jika nyawa habis, hutan hancur. Tempatkan menara di mana saja di luar jalur dan rintangan.</p>
+    </div>
+    <div class="tut-section">
+      <h3>Menara Penjaga</h3>
+      <div class="tut-grid">
+        <div class="tut-card">
+          <span class="tut-card-icon">🏹</span>
+          <span class="tut-card-name">Menara Panah</span>
+          <span class="tut-card-desc">Cepat, jarak jauh. Cocok untuk musuh biasa. Biaya 40 emas.</span>
+        </div>
+        <div class="tut-card">
+          <span class="tut-card-icon">🔥</span>
+          <span class="tut-card-name">Menara Api</span>
+          <span class="tut-card-desc">Damage area (AoE). Bakar banyak musuh sekaligus. Biaya 70 emas.</span>
+        </div>
+        <div class="tut-card">
+          <span class="tut-card-icon">❄️</span>
+          <span class="tut-card-name">Menara Es</span>
+          <span class="tut-card-desc">Memperlambat musuh. Kombinasikan dengan menara lain. Biaya 90 emas.</span>
+        </div>
+        <div class="tut-card">
+          <span class="tut-card-icon">⬆️</span>
+          <span class="tut-card-name">Upgrade</span>
+          <span class="tut-card-desc">Klik menara aktif lalu tekan Upgrade untuk tingkatkan level.</span>
+        </div>
+      </div>
+    </div>
+    <div class="tut-section">
+      <h3>Jenis Musuh</h3>
+      <div class="enemy-row"><span class="enemy-emoji">👺</span><div><span class="enemy-name">Prajurit Kegelapan</span><span class="enemy-desc">Musuh standar, mudah dikalahkan.</span></div></div>
+      <div class="enemy-row"><span class="enemy-emoji">👻</span><div><span class="enemy-name">Bayangan Liar</span><span class="enemy-desc">Sangat cepat, HP rendah. Gunakan Menara Es!</span></div></div>
+      <div class="enemy-row"><span class="enemy-emoji">🛡️</span><div><span class="enemy-name">Ksatria Baja</span><span class="enemy-desc">HP tebal, lambat. Butuh banyak tembakan.</span></div></div>
+      <div class="enemy-row"><span class="enemy-emoji">💀</span><div><span class="enemy-name">Raja Kegelapan</span><span class="enemy-desc">Boss akhir. HP 400, merusak nyawa lebih banyak.</span></div></div>
+    </div>
+    <div class="tut-section">
+      <h3>Tips Penting</h3>
+      <p>Tempatkan Menara Es sebelum tikungan agar musuh melambat lebih lama. Jual menara yang salah posisi dan pindahkan ke titik strategis. Gunakan emas bonus gelombang untuk upgrade sebelum gelombang berikutnya dimulai.</p>
+    </div>
+    <div class="modal-btn-row">
+      <a class="modal-btn" href="projek.html">⚔️ &nbsp; Mulai Sekarang</a>
+      <button class="modal-btn sec" data-close="modalTutorial">Kembali</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalKeluar">
+  <div class="modal-box" style="max-width:340px">
+    <div class="modal-header">
+      <span class="modal-title">🚪 Keluar Game</span>
+      <button class="modal-close" data-close="modalKeluar">✕</button>
+    </div>
+    <p style="font-size:0.92rem; color:var(--muted); line-height:1.7; margin-bottom:1.3rem;">
+      Apakah kamu yakin ingin keluar? Hutan Nusantara masih membutuhkan penjagamu...
+    </p>
+    <div class="modal-btn-row">
+      <button class="modal-btn" id="btnKeluarYa">Ya, Keluar</button>
+      <button class="modal-btn sec" data-close="modalKeluar">Batal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+const pCanvas = document.getElementById('particlesCanvas');
+const pCtx = pCanvas.getContext('2d');
+
+function resize() {
+  bgCanvas.width = pCanvas.width = window.innerWidth;
+  bgCanvas.height = pCanvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const trees = Array.from({ length: 20 }, () => ({
+  x: Math.random() * window.innerWidth,
+  y: window.innerHeight * 0.35 + Math.random() * window.innerHeight * 0.65,
+  size: 28 + Math.random() * 85,
+  sway: Math.random() * Math.PI * 2,
+  swaySpeed: 0.003 + Math.random() * 0.004,
+  alpha: 0.04 + Math.random() * 0.1,
+  layers: 2 + Math.floor(Math.random() * 3),
+}));
+
+const stars = Array.from({ length: 130 }, () => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight * 0.6,
+  r: 0.4 + Math.random() * 1.3,
+  alpha: 0.2 + Math.random() * 0.6,
+  t: Math.random() * Math.PI * 2,
+  spd: 0.01 + Math.random() * 0.025,
+}));
+
+const rays = Array.from({ length: 5 }, (_, i) => ({
+  x: window.innerWidth * (0.15 + i * 0.18),
+  angle: -0.15 + Math.random() * 0.3,
+  width: 18 + Math.random() * 42,
+  alpha: 0.014 + Math.random() * 0.022,
+  phase: Math.random() * Math.PI * 2,
+  spd: 0.0004 + Math.random() * 0.0003,
+}));
+
+function drawTree(ctx, x, y, size, sway, alpha, layers) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(x, y);
+  const tw = size * 0.1, th = size * 0.38;
+  ctx.fillStyle = '#2c1f0e';
+  ctx.fillRect(-tw / 2, -th * 0.5, tw, th);
+  for (let l = 0; l < layers; l++) {
+    const ls = size * (1 - l * 0.22);
+    const ly = -size * 0.33 - l * size * 0.27;
+    ctx.save();
+    ctx.rotate(sway * 0.04);
+    ctx.fillStyle = ['#1a3a1a', '#1f4a1f', '#265a26'][l] || '#265a26';
+    ctx.beginPath();
+    ctx.moveTo(0, ly - ls * 0.88);
+    ctx.lineTo(-ls * 0.52, ly + ls * 0.28);
+    ctx.lineTo(ls * 0.52, ly + ls * 0.28);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+function animateBg() {
+  const W = bgCanvas.width, H = bgCanvas.height;
+  bgCtx.clearRect(0, 0, W, H);
+  const sky = bgCtx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, '#050e05');
+  sky.addColorStop(0.4, '#0a160a');
+  sky.addColorStop(0.7, '#0f2010');
+  sky.addColorStop(1, '#0d1a0d');
+  bgCtx.fillStyle = sky;
+  bgCtx.fillRect(0, 0, W, H);
+
+  for (const s of stars) {
+    s.t += s.spd;
+    bgCtx.save();
+    bgCtx.globalAlpha = s.alpha * (0.6 + 0.4 * Math.sin(s.t));
+    bgCtx.fillStyle = '#e8f0e0';
+    bgCtx.beginPath();
+    bgCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    bgCtx.fill();
+    bgCtx.restore();
+  }
+
+  for (const ray of rays) {
+    ray.phase += ray.spd;
+    bgCtx.save();
+    bgCtx.globalAlpha = ray.alpha * (0.5 + 0.5 * Math.sin(ray.phase));
+    bgCtx.translate(ray.x, 0);
+    bgCtx.rotate(ray.angle);
+    const rg = bgCtx.createLinearGradient(0, 0, 0, H);
+    rg.addColorStop(0, 'rgba(80,160,60,0)');
+    rg.addColorStop(0.3, 'rgba(80,160,60,0.6)');
+    rg.addColorStop(1, 'rgba(80,160,60,0)');
+    bgCtx.fillStyle = rg;
+    bgCtx.fillRect(-ray.width / 2, 0, ray.width, H);
+    bgCtx.restore();
+  }
+
+  for (const t of [...trees].sort((a, b) => a.y - b.y)) {
+    t.sway += t.swaySpeed;
+    drawTree(bgCtx, t.x, t.y, t.size, t.sway, t.alpha, t.layers);
+  }
+
+  const fog = bgCtx.createLinearGradient(0, H * 0.65, 0, H);
+  fog.addColorStop(0, 'rgba(10,25,10,0)');
+  fog.addColorStop(1, 'rgba(8,18,8,0.72)');
+  bgCtx.fillStyle = fog;
+  bgCtx.fillRect(0, 0, W, H);
+
+  requestAnimationFrame(animateBg);
+}
+animateBg();
+
+const motes = Array.from({ length: 38 }, () => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  r: 0.8 + Math.random() * 2,
+  vx: (Math.random() - 0.5) * 0.25,
+  vy: -0.15 - Math.random() * 0.3,
+  alpha: 0.1 + Math.random() * 0.35,
+  life: Math.random(),
+  color: Math.random() > 0.5 ? '#90c860' : '#d4a017',
+}));
+
+function animateMotes() {
+  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+  for (const m of motes) {
+    m.x += m.vx; m.y += m.vy; m.life += 0.004;
+    if (m.y < -10 || m.life > 1) {
+      m.x = Math.random() * pCanvas.width;
+      m.y = pCanvas.height + 10;
+      m.life = 0;
+    }
+    const a = m.alpha * Math.sin(m.life * Math.PI);
+    pCtx.save();
+    pCtx.globalAlpha = a;
+    pCtx.fillStyle = m.color;
+    pCtx.shadowColor = m.color;
+    pCtx.shadowBlur = 6;
+    pCtx.beginPath();
+    pCtx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+    pCtx.fill();
+    pCtx.restore();
+  }
+  requestAnimationFrame(animateMotes);
+}
+animateMotes();
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.getElementById('btnTutorial').addEventListener('click', () => openModal('modalTutorial'));
+document.getElementById('btnKeluar').addEventListener('click', () => openModal('modalKeluar'));
+document.getElementById('btnKeluarYa').addEventListener('click', () => window.close());
+
+document.querySelectorAll('[data-close]').forEach(btn => {
+  btn.addEventListener('click', () => closeModal(btn.dataset.close));
+});
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+try {
+  const save = localStorage.getItem('phn_save');
+  if (save) {
+    const d = JSON.parse(save);
+    document.getElementById('saveLabel').textContent = 'Gelombang ' + (d.wave || 1);
+    const btn = document.getElementById('btnLanjutkan');
+    btn.classList.remove('disabled');
+    btn.addEventListener('click', () => { window.location.href = 'projek.html?continue=1'; });
+  }
+} catch (e) {}
+</script>
+</body>
+</html>

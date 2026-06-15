@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d1a0d">
+<title>Penjaga Hutan Nusantara</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="projek.css">
+</head>
+<body>
+
+  
+  <div class="forest-bg">
+    <div class="leaf leaf-1"></div>
+    <div class="leaf leaf-2"></div>
+    <div class="leaf leaf-3"></div>
+    <div class="leaf leaf-4"></div>
+    <div class="vine vine-left"></div>
+    <div class="vine vine-right"></div>
+  </div>
+
+  
+  <header class="topbar">
+    <div class="topbar-title">
+      <span class="title-emblem">🌳</span>
+      <div>
+        <h1>Penjaga Hutan Nusantara</h1>
+        <p class="topbar-subtitle">Lindungi Pohon Kehidupan dari Kegelapan</p>
+      </div>
+    </div>
+
+    <nav class="stats">
+      <div class="stat-card" id="stat-life">
+        <span class="stat-icon">❤️</span>
+        <div class="stat-info">
+          <span class="stat-label">Nyawa</span>
+          <span class="stat-value" id="life">10</span>
+        </div>
+      </div>
+      <div class="stat-card" id="stat-gold">
+        <span class="stat-icon">💰</span>
+        <div class="stat-info">
+          <span class="stat-label">Emas</span>
+          <span class="stat-value" id="gold">150</span>
+        </div>
+      </div>
+      <div class="stat-card" id="stat-wave">
+        <span class="stat-icon">🌊</span>
+        <div class="stat-info">
+          <span class="stat-label">Gelombang</span>
+          <span class="stat-value" id="wave">1</span>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="pause-overlay" id="pauseOverlay">
+    <div class="pause-modal">
+      <div class="pause-emblem">🌳</div>
+      <h2 class="pause-title">Permainan Dijeda</h2>
+      <p class="pause-sub">Hutan menunggumu kembali...</p>
+
+      <div class="pause-divider"></div>
+
+      <div class="pause-actions">
+        <button class="pause-btn primary" id="btnResume">
+          <span class="pbtn-icon">▶</span>
+          <span class="pbtn-label">Lanjutkan</span>
+        </button>
+        <button class="pause-btn danger" id="btnPauseMenu">
+          <span class="pbtn-icon">🏠</span>
+          <span class="pbtn-label">Kembali ke Menu</span>
+        </button>
+      </div>
+
+      <p class="pause-hint">Tekan <kbd>Esc</kbd> untuk lanjutkan</p>
+    </div>
+  </div>
+
+  
+  <main class="container">
+
+    
+    <aside class="sidebar">
+
+      
+      <div class="sidebar-header">
+        <span class="sidebar-icon">⚔️</span>
+        <h2>Menara Penjaga</h2>
+      </div>
+
+      
+      <div class="tower-list">
+
+        <button class="tower-btn" data-type="panah">
+          <div class="tower-icon-wrap panah">
+            <img src="assets/tower_panah.png" class="tower-sprite" alt="Pemanah">
+          </div>
+          <div class="tower-info">
+            <span class="tower-name">Pemanah Hutan</span>
+            <span class="tower-desc">Serangan cepat jarak jauh</span>
+            <span class="tower-cost">⚱️ 40 Emas</span>
+          </div>
+          <div class="tower-stats">
+            <div class="tstat"><span class="tstat-label">ATK</span><div class="tstat-bar"><div class="tstat-fill" style="width:40%"></div></div></div>
+            <div class="tstat"><span class="tstat-label">SPD</span><div class="tstat-bar"><div class="tstat-fill" style="width:80%"></div></div></div>
+          </div>
+        </button>
+
+        <button class="tower-btn" data-type="api">
+          <div class="tower-icon-wrap api">
+            <img src="assets/tower_api.png" class="tower-sprite" alt="Obor">
+          </div>
+          <div class="tower-info">
+            <span class="tower-name">Pembawa Obor</span>
+            <span class="tower-desc">Membakar area sekitar musuh</span>
+            <span class="tower-cost">⚱️ 70 Emas</span>
+          </div>
+          <div class="tower-stats">
+            <div class="tstat"><span class="tstat-label">ATK</span><div class="tstat-bar"><div class="tstat-fill" style="width:75%"></div></div></div>
+            <div class="tstat"><span class="tstat-label">SPD</span><div class="tstat-bar"><div class="tstat-fill" style="width:45%"></div></div></div>
+          </div>
+        </button>
+
+        <button class="tower-btn" data-type="es">
+          <div class="tower-icon-wrap es">
+            <img src="assets/tower_es.png" class="tower-sprite" alt="Penyihir">
+          </div>
+          <div class="tower-info">
+            <span class="tower-name">Penyihir Es</span>
+            <span class="tower-desc">Memperlambat gerakan musuh</span>
+            <span class="tower-cost">⚱️ 90 Emas</span>
+          </div>
+          <div class="tower-stats">
+            <div class="tstat"><span class="tstat-label">ATK</span><div class="tstat-bar"><div class="tstat-fill" style="width:55%"></div></div></div>
+            <div class="tstat"><span class="tstat-label">SPD</span><div class="tstat-bar"><div class="tstat-fill" style="width:60%"></div></div></div>
+          </div>
+        </button>
+
+      </div>
+
+      
+      <p class="selected-hint" id="selectedHint">Pilih menara lalu klik di peta untuk menempatkan</p>
+
+      
+      <div class="story-panel">
+        <div class="story-header">
+          <span>📖</span>
+          <h3>Kisah Hutan</h3>
+        </div>
+        <p class="story-text">
+          Makhluk kegelapan bangkit dari kedalaman bumi, menyerang hutan suci
+          Nusantara. Kamu adalah roh penjaga — kerahkan kekuatan alam untuk
+          melindungi <em>Pohon Kehidupan</em> sebelum semuanya lenyap.
+        </p>
+        <div class="story-divider"></div>
+        <p class="story-tip">💡 <em>Klik grid pada peta untuk menempatkan menara</em></p>
+      </div>
+
+      
+      <div class="action-buttons">
+        <div class="powerup-bar" id="powerupBar"></div>
+        <button class="btn-action btn-start" id="btnStart">▶ Mulai Gelombang</button>
+        <button class="btn-action btn-speed" id="btnSpeed">⏩ Percepat ×2</button>
+        <button class="btn-action btn-save"  id="btnSave"  onclick="saveGame()">💾 Simpan</button>
+      </div>
+
+      <div class="highscore-bar" id="highscoreBar"></div>
+
+    </aside>
+
+    
+    <div class="game-area">
+      <div class="canvas-wrapper">
+        <canvas id="gameCanvas" width="780" height="580"></canvas>
+
+        <button class="btn-hamburger" id="btnPauseTopbar" title="Menu (Esc)">
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+          <span class="ham-bar"></span>
+        </button>
+
+        <div class="wave-banner" id="waveBanner">
+          <span class="wave-text">Gelombang <span id="waveBannerNum">1</span> Dimulai!</span>
+        </div>
+
+        <div class="tower-popup" id="towerPopup">
+          <div class="tp-arrow"></div>
+          <div class="tp-header">
+            <span class="tp-emoji" id="tpEmoji"></span>
+            <span class="tp-name" id="tpName"></span>
+            <span class="tp-level" id="tpLevel"></span>
+          </div>
+          <div class="tp-stats">
+            <div class="tp-stat"><span>⚔️ DMG</span><span class="tp-val" id="tpDmg"></span></div>
+            <div class="tp-stat"><span>📡 Range</span><span class="tp-val" id="tpRange"></span></div>
+          </div>
+          <div class="tp-divider"></div>
+          <div class="tp-btns">
+            <button class="tp-btn upgrade" id="tpBtnUpgrade">⬆ Upgrade</button>
+            <button class="tp-btn move" id="tpBtnMove">📍 Pindah</button>
+            <button class="tp-btn sell" id="tpBtnSell">💸 Jual</button>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="canvas-footer">
+        <div class="footer-info">
+          <span class="fi-label">Status:</span>
+          <span class="fi-value" id="gameStatus">Menunggu perintah...</span>
+        </div>
+        <div class="footer-info">
+          <span class="fi-label">Musuh tersisa:</span>
+          <span class="fi-value" id="enemyCount">0</span>
+        </div>
+        <div class="footer-info">
+          <span class="fi-label">Menara aktif:</span>
+          <span class="fi-value" id="towerCount">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="waveClearPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 26, 13, 0.85); z-index: 99999; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+  <div class="wcp-card">
+    <div class="wcp-decor-top"></div>
+    <h2 id="wcpTitle">GELOMBANG SELESAI</h2>
+    <p class="wcp-subtitle">Hutan Nusantara Berhasil Dipertahankan!</p>
+    <div class="wcp-button-group">
+      <button id="wcpBtnNext" class="wcp-btn next">LANJUT GELOMBANG</button>
+      <button id="wcpBtnRestart" class="wcp-btn restart">ULANG GAME</button>
+      <button id="wcpBtnExit" class="wcp-btn exit">KELUAR KEMBALI</button>
+    </div>
+  </div>
+
+  
+
+  </main>
+
+
+
+  <script src="projek.js"></script>
+</body>
+</html>
